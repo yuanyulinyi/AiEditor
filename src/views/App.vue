@@ -46,6 +46,12 @@ onMounted(() => {
             </el-icon>
             <template #title>单词</template>
           </el-menu-item>
+          <el-menu-item index="4" @click="navigateTo('pdf')">
+            <el-icon>
+              <User />
+            </el-icon>
+            <template #title>pdf预览</template>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-container>

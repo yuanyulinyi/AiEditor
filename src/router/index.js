@@ -22,6 +22,10 @@ const router = createRouter({
         {
             path: '/word',
             component: () => import('../views/Word.vue')
+        },
+        {
+            path: '/pdf',
+            component: () => import('../views/PDF.vue')
         }
     ]
 })
