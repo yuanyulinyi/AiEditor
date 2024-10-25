@@ -1,4 +1,6 @@
 import axios from 'axios'
+//import { getToken } from '@/utils/auth';
+import { useUserStore } from '@/store'
 import { ElMessage } from 'element-plus'
 import router from '@/router'
 const baseURL = 'http://localhost:8080'
@@ -12,6 +14,13 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
     (config) => {
+        // TODO 2. 携带token
+        const { getToken } = useUserStore()
+        const token = getToken()
+        if (token) {
+            // 判断用户是否登录  若登录，则修改请求头携带token
+            config.headers.token = token
+        }
         return config
     },
     (err) => Promise.reject(err)

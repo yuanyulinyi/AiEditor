@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { CET4 } from '../dictionary/dicts/CET4'
 import { CET6 } from '../dictionary/dicts/CET6'
-import { insertWord } from '../api/word'
+import { insertWord } from '../api/word/word'
 import axios from 'axios'
 const input = ref('')
 const word = ref({
@@ -74,3 +74,4 @@ onMounted(() => {
 </template>
 
 <style scoped></style>
+../api/word/word

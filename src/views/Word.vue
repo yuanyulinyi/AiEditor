@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { CET4 } from '../dictionary/dicts/CET4'
 import { CET6 } from '../dictionary/dicts/CET6'
 import { ElDrawer, ElMessage } from 'element-plus'
-import { getWords } from '../api/word'
+import { getWords } from '../api/word/word'
 
 const formLabelWidth = '80px'
 
@@ -61,3 +61,4 @@ onMounted(() => {
 </template>
 
 <style></style>
+../api/word/word
