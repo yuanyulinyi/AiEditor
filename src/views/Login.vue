@@ -35,7 +35,7 @@
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700">密码</label>
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <input :type="showPassword ? 'text' : 'password'" id="password" v-model="password" required
                                 :class="{
@@ -46,17 +46,12 @@
                                 placeholder="••••••••">
                             <button type="button" @click="togglePassword"
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none">
-                                <span v-if="showPassword">
-                                    <EyeOffIcon class="h-5 w-5" />
-                                </span>
-                                <span v-else>
-                                    <EyeIcon class="h-5 w-5" />
-                                </span>
+                                <EyeIcon v-if="showPassword" class="h-5 w-5" />
+                                <EyeOffIcon v-else class="h-5 w-5" />
                             </button>
                         </div>
                         <p v-if="passwordError" class="mt-2 text-sm text-red-600">{{ passwordError }}</p>
                     </div>
-
 
                     <div v-if="!isLogin">
                         <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm
@@ -80,6 +75,7 @@
                         </div>
                         <p v-if="confirmPasswordError" class="mt-2 text-sm text-red-600">{{ confirmPasswordError }}</p>
                     </div>
+
                     <div class="flex items-center justify-between mt-4">
                         <div class="flex items-center">
                             <input id="remember-me" name="remember-me" type="checkbox" v-model="rememberMe"
@@ -89,6 +85,7 @@
                             </label>
                         </div>
                     </div>
+
                     <div>
                         <button type="submit"
                             class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
@@ -100,6 +97,27 @@
                 </form>
 
                 <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-2 gap-3">
+                        <button @click="handleGithubLogin"
+                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <GithubIcon class="h-5 w-5 mr-2" />
+                            GitHub
+                        </button>
+                        <button @click="handleGiteeLogin"
+                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <img src="@/assets/images/gitee.png" width="20px">
+                            Gitee
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -114,7 +132,6 @@
                 </button>
             </div>
         </div>
-
         <transition name="fade">
             <div v-if="message" class="fixed bottom-4 right-4 p-4 rounded-md shadow-lg" :class="messageClass">
                 {{ message }}
@@ -124,28 +141,21 @@
 </template>
 
 <script setup>
-import { EyeIcon, EyeOffIcon } from '@heroicons/vue/solid'
 import { ref, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { UserIcon, Loader2Icon, CheckIcon, XIcon } from 'lucide-vue-next'
-import Cookies from "js-cookie"
+import { UserIcon, EyeIcon, EyeOffIcon, Loader2Icon, CheckIcon, XIcon, GithubIcon } from 'lucide-vue-next'
 import { useUserStore } from "@/store"
-import { encrypt } from '@/utils/jsencrypt'
+import { authByGithub, authByGitee } from "@/api/auth/auth"
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 
-const showPassword = ref(false)
-
-const togglePassword = () => {
-    showPassword.value = !showPassword.value
-}
-
 const isLogin = ref(true)
 const username = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const showPassword = ref(false)
 const isLoading = ref(false)
 const message = ref('')
 const rememberMe = ref(false)
@@ -186,6 +196,10 @@ const messageClass = computed(() => {
     }
 })
 
+const togglePassword = () => {
+    showPassword.value = !showPassword.value
+}
+
 const toggleForm = () => {
     isLogin.value = !isLogin.value
     username.value = ''
@@ -207,17 +221,11 @@ const handleSubmit = async () => {
 
     try {
         if (isLogin.value) {
-            // 登录逻辑
+            // Login logic
             await userStore.login(username.value, password.value)
             if (rememberMe.value) {
-                /* Cookies.set("username", username.value, { expires: 30 })
-                Cookies.set("password", encrypt(password.value), { expires: 30 })
-                Cookies.set("rememberMe", rememberMe.value, { expires: 30 }) */
                 userStore.saveUser(username.value, password.value)
             } else {
-                /* Cookies.remove("username")
-                Cookies.remove("password")
-                Cookies.remove("rememberMe") */
                 userStore.removeUser()
             }
             userStore.setUsername(username.value)
@@ -225,8 +233,7 @@ const handleSubmit = async () => {
             const redirect = route.query.redirect?.toString() || '/'
             router.push(redirect)
         } else {
-            // 注册逻辑
-            // 这里需要实现注册的 API 调用
+            // Register logic
             await userStore.register(username.value, password.value)
             message.value = 'Registration successful! Please login.'
             isLogin.value = true
@@ -236,6 +243,37 @@ const handleSubmit = async () => {
         message.value = `Authentication failed: ${error.message}`
     } finally {
         isLoading.value = false
+    }
+}
+
+//Github登录
+const handleGithubLogin = async () => {
+    console.log('GitHub login clicked');
+    try {
+        const res = await authByGithub();
+        const clientId = res.data.data; // 确保这里的路径是正确的
+        const redirectUri = "http://localhost:5173/login/oauth2/code/github";
+        console.log('Client ID:', clientId); // 打印 Client ID 以确认是否正确获取
+        console.log('Redirect URI:', redirectUri); // 打印 Redirect URI 以确认是否正确
+        window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+
+    } catch (error) {
+        console.error('Failed to authenticate with GitHub:', error);
+    }
+};
+
+
+const handleGiteeLogin = async () => {
+    console.log('Gitee login clicked');
+    try {
+        const res = await authByGitee();
+        const clientId = res.data.data; // 确保这里的路径是正确的
+        const redirectUri = "http://localhost:5173/login/oauth2/code/gitee";
+        console.log('Client ID:', clientId); // 打印 Client ID 以确认是否正确获取
+        console.log('Redirect URI:', redirectUri); // 打印 RedirectURI 以确认是否正确
+        window.location.href = `https://gitee.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+    } catch (error) {
+        console.error('Failed to authenticate with Gitee:', error);
     }
 }
 </script>

@@ -14,6 +14,10 @@ const router = createRouter({
             component: () => import('../views/Login.vue')
         },
         {
+            path: '/login/oauth2/code/:pathMatch(.*)*',
+            component: () => import('../views/auth/Auth.vue')
+        },
+        {
             path: '/study',
             component: () => import('../views/Study.vue')
         },
@@ -51,13 +55,19 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-    // 路由守卫  若当前页面不是登录页面，则判断是否有token，没有则跳转到登录页面
-    const userStore = useUserStore()
-    if (to.path !== '/login' && to.path !== '/register' && !userStore.token) {
-        alert('非法访问')
-        return '/login'
+    // 使用正则表达式匹配需要排除的路径
+    const excludedPathsRegex = /^\/(login|register|oauth2\/authorization|login\/oauth2\/code)($|\/)/;
+
+    // 检查路径是否匹配正则表达式
+    if (!excludedPathsRegex.test(to.path)) {
+        // 如果路径不是要排除的路径之一，则检查 token
+        const userStore = useUserStore();
+        if (!userStore.token) {
+            // 如果用户没有 token，则重定向到登录页面
+            alert('非法访问');
+            return '/login';
+        }
     }
-    return true
-})
+});
 
 export default router
