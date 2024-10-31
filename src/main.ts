@@ -1,12 +1,10 @@
 import { createApp } from 'vue'
-import './assets/main.css'
-import store from './store'
-
-import App from './views/App.vue'
-
-import router from '@/router/index'
-import ElementPlus from 'element-plus'
+declare const require: any
+const App = require('@/views/App.vue')
+const store = require('@/store/index')
+const router = require('@/router/index')
 import 'element-plus/dist/index.css'
+import ElementPlus from 'element-plus'
 
 const app = createApp(App)
 
