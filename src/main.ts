@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
-declare const require: any
-const App = require('@/views/App.vue')
-const store = require('@/store/index')
-const router = require('@/router/index')
+import App from '@/views/App.vue'
+import store from '@/store/index.js'
+import router from '@/router/index.js'
+import './assets/main.css'
 import 'element-plus/dist/index.css'
 import ElementPlus from 'element-plus'
 
