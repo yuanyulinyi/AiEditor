@@ -29,6 +29,10 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
     (res) => {
+        // 二进制数据则直接返回
+        if (res.request.responseType === 'blob' || res.request.responseType === 'arraybuffer') {
+            return Promise.resolve(res)
+        }
         if (res.data.code === 200) {
             console.log('ok')
             // code值为200 时视为成功
@@ -51,6 +55,5 @@ instance.interceptors.response.use(
         return Promise.reject(err)
     }
 )
-
 export default instance
 export { baseURL }

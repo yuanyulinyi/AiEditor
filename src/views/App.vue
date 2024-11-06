@@ -78,6 +78,15 @@ const menuItems = [
       { index: '5-2', path: '/user/avatar', icon: Edit, title: '更换头像' },
       { index: '5-3', path: '/user/password', icon: Key, title: '修改密码' },
     ]
+  },
+  {
+    index: '6',
+    path: '/salary',
+    icon: User,
+    title: '工资管理',
+    children: [
+      { index: '6-1', path: '/salary/employee', icon: User, title: '员工信息' }
+    ]
   }
 ]
 

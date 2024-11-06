@@ -50,6 +50,16 @@ const router = createRouter({
                     component: () => import('../views/user/Password.vue')
                 }
             ]
+        },
+        {
+            path: '/salary',
+            redirect: 'employee',
+            children: [
+                {
+                    path: 'employee',
+                    component: () => import('../views/salary/Employee.vue')
+                }
+            ]
         }
     ]
 })
